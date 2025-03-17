@@ -27,65 +27,30 @@ jobs:
           mkdir -p build
 
           # Copy static assets
-          cp -r public build/
+          cp -r public/* build/ || true
+          cp index.html build/ || true
+          cp styles.css build/ || true
+          mkdir -p build/js
+          cp js/main.js build/js/ || true
 
-          # Create index.html from views/index.ejs
-          node -e "
-            const fs = require('fs');
-            const ejs = require('ejs');
-            const path = require('path');
-
-            // Read sample data
-            const roomsData = {
-              rooms: [
-                {
-                  id: '1701234567890',
-                  name_zh: '豪华双人房',
-                  name_en: 'Deluxe Double Room',
-                  name_ms: 'Bilik Double Mewah',
-                  location: ['city-center', 'near-smk-kanowit'],
-                  pricePerNight: 150,
-                  roomType: 'room',
-                  images: ['/images/room1.jpg']
-                },
-                {
-                  id: '1701234567891',
-                  name_zh: '家庭套房',
-                  name_en: 'Family Suite',
-                  name_ms: 'Suite Keluarga',
-                  location: ['near-balai-polis', 'near-hospital'],
-                  pricePerNight: 250,
-                  roomType: 'whole-house',
-                  images: ['/images/room2.jpg']
+          # Create index.html from views/index.ejs if needed
+          if [ ! -f index.html ] && [ -f views/index.ejs ]; then
+            echo "Converting EJS to HTML..."
+            node -e "
+              const fs = require('fs');
+              try {
+                // Just copy the static files we already have
+                if (fs.existsSync('index.html')) {
+                  fs.copyFileSync('index.html', 'build/index.html');
+                  console.log('Copied existing index.html');
                 }
-              ]
-            };
-
-            // Sample translations
-            const translations = {
-              homeTitle: '🏡 Kanowit HomieStay – Easy Rental, Comfortable Stay!',
-              homeSubtitle: 'Looking for a place in Kanowit? We offer safe, clean, and affordable rooms for both long-term and short-term stays!',
-              // Include other translations here
-            };
-
-            // Render the template
-            const template = fs.readFileSync('views/index.ejs', 'utf8');
-            const html = ejs.render(template, {
-              rooms: roomsData.rooms,
-              translations: translations,
-              lang: 'en',
-              getLocalizedContent: (room, field, defaultValue = '') => {
-                const langField = `${field}_en`;
-                return room[langField] || room[field] || defaultValue;
+              } catch (err) {
+                console.error('Error copying files:', err);
               }
-            });
-
-            // Write to file
-            fs.writeFileSync('build/index.html', html);
-          "
-
-          # Create other necessary pages
-          # Add additional page renders here
+            "
+          else
+            echo "Using existing static files"
+          fi
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@4.1.4
