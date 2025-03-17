@@ -665,6 +665,12 @@ if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
+// Create QR codes directory if it doesn't exist
+const qrCodeDir = path.join(__dirname, 'public', 'qrcodes');
+if (!fs.existsSync(qrCodeDir)) {
+  fs.mkdirSync(qrCodeDir, { recursive: true });
+}
+
 // Helper functions for data operations
 function getRooms() {
   const filePath = path.join(__dirname, 'data', 'rooms.json');
