@@ -1,0 +1,87 @@
+    </div><!-- End of main-container -->
+  </div><!-- End of content-wrapper -->
+
+  <footer class="footer">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4 mb-4">
+          <h5 class="mb-3"><%= translations ? translations.siteName : 'Homestay Booking' %></h5>
+          <p><%= translations ? translations.footerTagline : 'Your perfect home away from home. Book comfortable and affordable homestays for your next trip.' %></p>
+        </div>
+        <div class="col-md-2 mb-4">
+          <h5 class="mb-3"><%= translations ? translations.links : 'Links' %></h5>
+          <a href="/" class="footer-link"><%= translations ? translations.home : 'Home' %></a>
+          <a href="#about" class="footer-link"><%= translations ? translations.about : 'About' %></a>
+          <a href="#contact" class="footer-link"><%= translations ? translations.contact : 'Contact' %></a>
+        </div>
+        <div class="col-md-3 mb-4">
+          <h5 class="mb-3"><%= translations ? translations.contact : 'Contact Us' %></h5>
+          <p><i class="fas fa-map-marker-alt me-2"></i> <%= translations ? translations.address : '123 Main Street, Kuala Lumpur' %></p>
+          <p><i class="fas fa-phone-alt me-2"></i> <%= translations ? translations.phoneNumber : '+60 11-1057 8899' %></p>
+          <p><i class="fas fa-envelope me-2"></i> <%= translations ? translations.email : 'info@homestay.example' %></p>
+        </div>
+        <div class="col-md-3 mb-4">
+          <h5 class="mb-3"><%= translations ? translations.followUs : 'Follow Us' %></h5>
+          <div class="d-flex">
+            <a href="#" class="social-icon me-2"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="social-icon me-2"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="social-icon me-2"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-pinterest"></i></a>
+          </div>
+        </div>
+      </div>
+      <hr class="footer-divider">
+      <div class="row">
+        <div class="col-md-6 mb-3 mb-md-0">
+          <p class="mb-0"><%= translations ? translations.copyright : '© 2025 Homiestay Booking. All rights reserved.' %></p>
+        </div>
+        <div class="col-md-6 text-md-end">
+          <p class="mb-0"><%= translations ? translations.privacyTerms : 'Privacy Policy | Terms of Service' %></p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Helper functions for cookies
+      function setCookie(name, value, days) {
+        let expires = '';
+        if (days) {
+          const date = new Date();
+          date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+          expires = '; expires=' + date.toUTCString();
+        }
+        document.cookie = name + '=' + (value || '') + expires + '; path=/';
+      }
+
+      function getCookie(name) {
+        const nameEQ = name + '=';
+        const ca = document.cookie.split(';');
+        for(let i = 0; i < ca.length; i++) {
+          let c = ca[i];
+          while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+          if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+        }
+        return null;
+      }
+
+      // Get current language
+      const currentLang = '<%= lang %>' || getCookie('siteLanguage') || 'ms';
+      console.log("Current language:", currentLang);
+
+      // Show active language in dropdown
+      const languageOptions = document.querySelectorAll('.language-option');
+      languageOptions.forEach(option => {
+        if (option.getAttribute('href').includes(currentLang)) {
+          option.classList.add('active');
+        } else {
+          option.classList.remove('active');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,430 @@
+<%- include('partials/header') %>
+
+<%
+// Helper function to get room content in the correct language
+function getLocalizedContent(room, field, defaultValue = '') {
+  const lang = locals.lang || 'ms';
+
+  // First try direct language suffix (e.g., name_zh)
+  const langField = `${field}_${lang}`;
+
+  if (room[langField]) {
+    return room[langField];
+  }
+
+  // Fallbacks in order: English, Malay, then direct field
+  if (lang !== 'en' && room[`${field}_en`]) {
+    return room[`${field}_en`];
+  }
+
+  if (lang !== 'ms' && room[`${field}_ms`]) {
+    return room[`${field}_ms`];
+  }
+
+  // Legacy support - if the field exists without language suffix
+  if (room[field]) {
+    return room[field];
+  }
+
+  return defaultValue;
+}
+%>
+
+<!-- Hero Section -->
+<div class="hero-section">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto text-center">
+        <h1 class="display-4 fw-bold mb-4"><%= translations ? translations.homeTitle : '🏡 Kanowit HomieStay – Easy Rental, Comfortable Stay!' %></h1>
+        <p class="lead mb-5"><%= translations ? translations.homeSubtitle : 'Looking for a place in Kanowit? We offer safe, clean, and affordable rooms for both long-term and short-term stays!' %></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Discount CSS -->
+<style>
+  .discount-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #dc3545;
+    color: white;
+    padding: 0.2rem 0.5rem;
+    border-radius: 0.5rem;
+    font-size: 0.8rem;
+    font-weight: bold;
+    z-index: 2;
+  }
+
+  .pulse-animation {
+    animation: pulse 1.5s infinite;
+  }
+
+  @keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+  }
+</style>
+
+<!-- Special Discount Callout -->
+<div class="container mb-4">
+  <div class="alert alert-danger text-center p-3">
+    <div class="d-flex align-items-center justify-content-center">
+      <div class="me-3">
+        <i class="fas fa-gift fa-2x pulse-animation"></i>
+      </div>
+      <div>
+        <h5 class="mb-1"><%= translations && translations.specialOfferTitle ? translations.specialOfferTitle : 'Special Discount Offer!' %></h5>
+        <p class="mb-0"><%= translations && translations.specialOfferDesc ? translations.specialOfferDesc : 'Enjoy up to 15% off all accommodation bookings - Limited time offer!' %></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Simple Filter Section -->
+<div class="container mb-4">
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-4">
+          <label class="form-label fw-bold"><i class="fas fa-map-marker-alt me-2"></i> <%= translations ? translations.location : 'Location' %></label>
+          <select class="form-select filter-select" id="locationFilter">
+            <option value="all"><%= translations ? translations.allLocations : 'All Locations' %></option>
+            <option value="city-center"><%= translations ? translations.cityCenter : 'Kanowit City Center' %></option>
+            <option value="near-balai-polis"><%= translations ? translations.nearBalaiPolis : 'Near Balai Polis' %></option>
+            <option value="near-hospital"><%= translations ? translations.nearHospital : 'Near Hospital' %></option>
+            <option value="near-smk-kanowit"><%= translations ? translations.nearSMKKanowit : 'Near SMK Kanowit' %></option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label fw-bold"><i class="fas fa-bed me-2"></i> <%= translations ? translations.roomType : 'Room Type' %></label>
+          <select class="form-select filter-select" id="roomTypeFilter">
+            <option value="all"><%= translations ? translations.allTypes : 'All Types' %></option>
+            <option value="whole-house"><%= translations ? translations.wholeHouse : 'Whole House' %></option>
+            <option value="room"><%= translations ? translations.singleRoom : 'Room' %></option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label fw-bold"><i class="fas fa-tag me-2"></i> <%= translations ? translations.monthlyRent : 'Monthly Rent' %></label>
+          <select class="form-select filter-select" id="priceFilter">
+            <option value="all"><%= translations ? translations.allPrices : 'All Prices' %></option>
+            <option value="below-300"><%= translations ? translations.below300 : 'Below RM300' %></option>
+            <option value="300-500"><%= translations ? translations.between300And500 : 'RM300-RM500' %></option>
+            <option value="above-500"><%= translations ? translations.above500 : 'Above RM500' %></option>
+          </select>
+        </div>
+        <div class="col-md-3" style="display: none;">
+          <label class="form-label fw-bold"><i class="fas fa-home me-2"></i> <%= translations ? translations.amenities : 'Amenities' %></label>
+          <select class="form-select filter-select" id="amenitiesFilter">
+            <option value="all"><%= translations ? translations.allAmenities : 'All Amenities' %></option>
+            <option value="wifi"><%= translations ? translations.wifi : 'WiFi' %></option>
+            <option value="ac"><%= translations ? translations.ac : 'Air Conditioning' %></option>
+            <option value="utilities"><%= translations ? translations.utilities : 'Utilities Included' %></option>
+            <option value="fan"><%= translations ? translations.fan : 'Fan' %></option>
+          </select>
+        </div>
+      </div>
+      <div class="row mt-3">
+        <div class="col-12 d-flex justify-content-end">
+          <button class="btn btn-primary" id="applyFilter">
+            <i class="fas fa-filter me-2"></i> <%= translations ? translations.filter : 'Filter' %>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- All Rooms Section -->
+<div class="container">
+  <section class="room-category mb-5" id="allRooms">
+    <div class="section-header">
+      <h2><%= translations ? translations.allAvailableRooms : 'All Available Rooms' %></h2>
+      <p><%= translations ? translations.roomSelectionDesc : 'We offer various types of quality accommodations' %></p>
+    </div>
+
+    <div class="row room-container">
+      <% if (rooms && rooms.length > 0) { %>
+        <%
+          rooms.forEach(room => {
+            // Extract room attributes for filtering
+            const roomLocation = Array.isArray(room.location) ? room.location : [room.location || 'city-center'];
+            const roomType = room.roomType || 'single';
+            const monthlyPrice = room.monthlyPrice || room.pricePerNight * 30;
+            const roomAmenities = room.amenities || [];
+
+            // Get translated location names
+            const locationDisplays = [];
+            if (Array.isArray(roomLocation)) {
+              roomLocation.forEach(loc => {
+                if (loc === 'city-center') {
+                  locationDisplays.push(translations ? translations.cityCenter : 'Kanowit City Center');
+                } else if (loc === 'near-balai-polis') {
+                  locationDisplays.push(translations ? translations.nearBalaiPolis : 'Near Balai Polis');
+                } else if (loc === 'near-hospital') {
+                  locationDisplays.push(translations ? translations.nearHospital : 'Near Hospital');
+                } else if (loc === 'near-smk-kanowit') {
+                  locationDisplays.push(translations ? translations.nearSMKKanowit : 'Near SMK Kanowit');
+                }
+              });
+            } else {
+              locationDisplays.push(translations ? translations.cityCenter : 'Kanowit City Center');
+            }
+        %>
+          <div class="col-md-6 col-lg-4 mb-4 room-card-wrapper"
+               data-location="<%= Array.isArray(roomLocation) && roomLocation.length > 0 ? roomLocation.join(',') : 'city-center' %>"
+               data-room-type="<%= roomType || 'single' %>"
+               data-price="<%= monthlyPrice || 0 %>"
+               data-amenities="<%= Array.isArray(roomAmenities) && roomAmenities.length > 0 ? roomAmenities.join(',') : '' %>">
+            <div class="card room-card h-100">
+              <% if (room.pricePerNight && parseFloat(room.pricePerNight) > 200) { %>
+                <div class="badge-superhost"><%= translations ? translations.premium : 'Premium' %></div>
+              <% } else { %>
+                <div class="badge-guest-choice"><%= translations ? translations.popular : 'Popular' %></div>
+              <% } %>
+
+              <%
+                // Calculate discount
+                const discountRate = room.pricePerNight > 200 ? 0.15 : 0.10;
+                const discount = Math.round(discountRate * 100);
+              %>
+              <div class="discount-badge pulse-animation"><%= discount %>% <%= translations && translations.discount ? translations.discount : 'discount' %></div>
+
+              <% if (room.images && room.images.length > 0) { %>
+                <img src="<%= room.images[0] %>" class="card-img-top" alt="<%= getLocalizedContent(room, 'name', 'Room') %>">
+              <% } else { %>
+                <img src="/images/room-placeholder.jpg" class="card-img-top" alt="<%= translations ? translations.roomPreview : 'Room Preview' %>">
+              <% } %>
+
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <h5 class="card-title m-0"><%= getLocalizedContent(room, 'name', 'Homiestay Room') %></h5>
+                  <div class="rating">
+                    <i class="fas fa-star"></i>
+                    <span>4.8</span>
+                  </div>
+                </div>
+
+                <div class="room-details mb-3">
+                  <p class="mb-1"><i class="fas fa-map-marker-alt text-primary me-2"></i> <%= locationDisplays.join(', ') %></p>
+                  <p class="mb-1"><i class="fas fa-bed text-primary me-2"></i>
+                    <% if (roomType === 'whole-house') { %>
+                      <%= translations ? translations.wholeHouse : 'Whole House' %>
+                    <% } else { %>
+                      <%= translations ? translations.singleRoom : 'Room' %>
+                    <% } %>
+                  </p>
+                  <p class="room-price mb-1">
+                    <i class="fas fa-tag text-primary me-2"></i>
+                    <%
+                      const discountedPrice = Math.floor(monthlyPrice * (1 - discountRate));
+                    %>
+                    <span class="text-decoration-line-through text-muted">RM <%= monthlyPrice %></span>
+                    <span class="fw-bold text-danger">RM <%= discountedPrice %></span> <small><%= translations ? translations.perMonth : '/ month' %></small>
+                    <% if (room.pricePerDay) { %>
+                      <span class="ms-2 small">(RM <%= room.pricePerDay %> <%= translations ? translations.perDay : '/ day' %>)</span>
+                    <% } %>
+                  </p>
+                  <p class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>
+                    <%
+                      const amenities = [];
+                      if (room.hasWifi) amenities.push(translations ? translations.wifi : 'WiFi');
+                      if (room.hasAC) amenities.push(translations ? translations.ac : 'Air Conditioning');
+                      if (room.includesUtilities) amenities.push(translations ? translations.utilities : 'Utilities Included');
+                      if (room.hasFan) amenities.push(translations ? translations.fan : 'Fan');
+                      if (amenities.length === 0) amenities.push(translations ? translations.basicFacilities : 'Basic Facilities');
+                    %>
+                    <%= amenities.join(', ') %>
+                  </p>
+                </div>
+
+                <p class="card-text text-truncate mb-3"><%= getLocalizedContent(room, 'description', translations ? translations.comfortableStay : 'Comfortable and safe accommodation') %></p>
+
+                <div class="d-flex justify-content-between align-items-center">
+                  <a href="/room/<%= room.id %>" class="btn btn-outline-primary"><%= translations ? translations.viewDetails : 'View Details' %></a>
+                  <a href="https://wa.me/<%= process.env.WHATSAPP_NUMBER || '60123456789' %>?text=<%= encodeURIComponent(`${getLocalizedContent(room, 'name', 'Room inquiry')}`) %>" class="btn btn-success btn-sm" target="_blank">
+                    <i class="fab fa-whatsapp"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% });
+        } else { %>
+          <div class="col-12 text-center">
+            <p class="text-muted"><%= translations ? translations.noRoomsAvailable : 'No rooms available' %></p>
+          </div>
+        <% } %>
+    </div>
+  </section>
+
+  <!-- If no rooms available at all -->
+  <% if (!rooms || rooms.length === 0) { %>
+    <div class="col-12 text-center py-5">
+      <div class="alert alert-info py-5">
+        <h3 class="mb-3"><%= translations ? translations.noRoomsAvailable : 'No rooms available' %></h3>
+        <p class="mb-4"><%= translations ? translations.checkBackLater : 'We are adding new listings. Please check back later.' %></p>
+        <a href="/admin/login" class="btn btn-primary"><%= translations ? translations.addYourProperty : 'Add Your Property' %></a>
+      </div>
+    </div>
+  <% } %>
+</div>
+
+<!-- CTA Section -->
+<section class="section-cta py-5">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 offset-lg-2">
+        <div class="cta-card text-center p-5 rounded">
+          <h2 class="mb-4"><%= translations && translations.becomeHost ? translations.becomeHost : 'Own a property? Become a host!' %></h2>
+          <p class="lead mb-4"><%= translations && translations.becomeHostDesc ? translations.becomeHostDesc : 'Share your space and start earning by hosting guests in your property' %></p>
+          <a href="/admin/login" class="btn btn-lg btn-primary"><%= translations && translations.getStarted ? translations.getStarted : 'Get Started' %></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Filtering functionality
+  document.addEventListener('DOMContentLoaded', function() {
+    const applyFilterBtn = document.getElementById('applyFilter');
+    const locationFilter = document.getElementById('locationFilter');
+    const roomTypeFilter = document.getElementById('roomTypeFilter');
+    const priceFilter = document.getElementById('priceFilter');
+    const roomCards = document.querySelectorAll('.room-card-wrapper');
+
+    console.log("Filter elements:", {
+      applyFilterBtn: !!applyFilterBtn,
+      locationFilter: !!locationFilter,
+      roomCards: roomCards.length
+    });
+
+    // Show all cards initially
+    function resetFilters() {
+      console.log("Resetting filters");
+      roomCards.forEach(card => {
+        card.style.display = 'block';
+      });
+
+      // Reset all filter dropdowns
+      locationFilter.value = 'all';
+      roomTypeFilter.value = 'all';
+      priceFilter.value = 'all';
+
+      // Remove any no results message
+      document.querySelectorAll('.no-results-message').forEach(el => el.remove());
+    }
+
+    // Initialize - reset filters and show all rooms
+    resetFilters();
+
+    // Update filters based on selections
+    locationFilter.addEventListener('change', applyFilters);
+    roomTypeFilter.addEventListener('change', applyFilters);
+    priceFilter.addEventListener('change', applyFilters);
+
+    // Apply filters button click
+    applyFilterBtn.addEventListener('click', applyFilters);
+
+    // Apply filters to show/hide room cards
+    function applyFilters() {
+      console.log("Applying filters...");
+      const locationValue = locationFilter.value;
+      const roomTypeValue = roomTypeFilter.value;
+      const priceValue = priceFilter.value;
+
+      console.log("Selected filters:", {
+        location: locationValue,
+        roomType: roomTypeValue,
+        price: priceValue
+      });
+
+      let visibleCount = 0;
+      const keyLocations = ['near-hospital', 'near-balai-polis'];
+
+      roomCards.forEach(card => {
+        const cardLocations = card.dataset.location ? card.dataset.location.split(',') : [];
+        console.log("Card locations:", cardLocations);
+
+        const cardRoomType = card.dataset.roomType || '';
+        const cardPrice = parseFloat(card.dataset.price || '0');
+
+        // Debug card data
+        console.log("Card data:", {
+          locations: cardLocations,
+          roomType: cardRoomType,
+          price: cardPrice
+        });
+
+        let showCard = true;
+
+        // Check location filter
+        if (locationValue !== 'all') {
+          // Check if the selected location is in the card's locations array
+          const hasLocation = cardLocations.some(loc => loc === locationValue);
+          console.log(`Checking if card has location '${locationValue}':`, hasLocation);
+          if (!hasLocation) {
+            console.log('location not match');
+            showCard = false;
+          }
+        }
+
+        // Check room type filter
+        if (roomTypeValue !== 'all' && cardRoomType !== roomTypeValue) {
+          console.log('room type not match');
+          showCard = false;
+        }
+
+        // Check price filter
+        if (priceValue !== 'all') {
+          if (priceValue === 'below-300') {
+            if (cardPrice >= 300) {
+              console.log();
+              showCard = false;
+            }
+          } else if (priceValue === '300-500') {
+            if (cardPrice < 300 || cardPrice > 500) {
+              console.log('price not match');
+              showCard = false;
+            }
+          } else if (priceValue === 'above-500') {
+            if (cardPrice <= 500) {
+              console.log('price not match');
+              showCard = false;
+            }
+          }
+        }
+
+        card.style.display = showCard ? 'block' : 'none';
+        console.log("Card visible:", showCard);
+        if (showCard) visibleCount++;
+      });
+
+      // Count visible cards
+      const visibleCards = document.querySelectorAll('.room-card-wrapper:not([style*="display: none"])').length;
+      if (visibleCards === 0) {
+        const roomContainer = document.querySelector('.room-container');
+        const noResultsElement = document.createElement('div');
+        noResultsElement.className = 'col-12 text-center py-3 no-results-message';
+        noResultsElement.innerHTML = `
+          <p class="text-muted mb-2"><%= translations && translations.noFilterResults ? translations.noFilterResults : "No rooms match your filter criteria" %></p>
+          <p class="text-success small"><i class="fas fa-tags me-1"></i> <%= translations && translations.tryDifferentFilters ? translations.tryDifferentFilters : 'Try different filters to find rooms with 10-15% discounts!' %></p>
+        `;
+
+        // Remove any existing no results message
+        document.querySelectorAll('.no-results-message').forEach(el => el.remove());
+
+        // Add the no results message
+        roomContainer.appendChild(noResultsElement);
+      } else {
+        // Remove any existing no results message
+        document.querySelectorAll('.no-results-message').forEach(el => el.remove());
+      }
+    }
+  });
+</script>
+
+<%- include('partials/footer') %>

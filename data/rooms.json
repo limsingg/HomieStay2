@@ -1,0 +1,48 @@
+{
+  "rooms": [
+    {
+      "id": "1701234567890",
+      "name_zh": "豪华双人房",
+      "name_en": "Deluxe Double Room",
+      "name_ms": "Bilik Double Mewah",
+      "location": ["city-center", "near-smk-kanowit"],
+      "pricePerNight": 10,
+      "pricePerHour": 30,
+      "description_zh": "这是一间宽敞舒适的豪华双人房，配有一张特大号床和私人阳台。房间享有城市美景，是商务和休闲旅客的理想选择。",
+      "description_en": "This is a spacious and comfortable deluxe double room with a king-size bed and private balcony. The room has beautiful city views and is ideal for business and leisure travelers.",
+      "description_ms": "Ini adalah bilik double mewah yang luas dan selesa dengan katil king-size dan balkoni peribadi. Bilik ini mempunyai pemandangan bandar yang indah dan sesuai untuk pelancong perniagaan dan bersantai.",
+      "facilities_zh": "WiFi, 空调, 50寸智能电视, 冰箱, 热水壶, 独立卫浴, 吹风机, 洗漱用品",
+      "facilities_en": "WiFi, Air conditioning, 50-inch Smart TV, Refrigerator, Kettle, Private bathroom, Hair dryer, Toiletries",
+      "facilities_ms": "WiFi, Penyaman udara, TV Pintar 50 inci, Peti sejuk, Cerek, Bilik mandi peribadi, Pengering rambut, Peralatan mandi",
+      "availableDates_zh": "2025年12月1日至2024年3月30日",
+      "availableDates_en": "December 1, 2025 to March 30, 2024",
+      "availableDates_ms": "1 Disember 2025 hingga 30 Mac 2024",
+      "images": [
+        "https://media.istockphoto.com/id/2045383950/photo/digital-render-of-a-serene-bedroom-oasis-with-natural-light.jpg?s=1024x1024&w=is&k=20&c=2olxIZIKzaPCQeRvJNLxfUB7UYFeUhyLFKZVifVk0Po=",
+        "https://media.istockphoto.com/id/2045383950/photo/digital-render-of-a-serene-bedroom-oasis-with-natural-light.jpg?s=1024x1024&w=is&k=20&c=2olxIZIKzaPCQeRvJNLxfUB7UYFeUhyLFKZVifVk0Po=",
+        "https://media.istockphoto.com/id/2045383950/photo/digital-render-of-a-serene-bedroom-oasis-with-natural-light.jpg?s=1024x1024&w=is&k=20&c=2olxIZIKzaPCQeRvJNLxfUB7UYFeUhyLFKZVifVk0Po=",
+        "https://media.istockphoto.com/id/2045383950/photo/digital-render-of-a-serene-bedroom-oasis-with-natural-light.jpg?s=1024x1024&w=is&k=20&c=2olxIZIKzaPCQeRvJNLxfUB7UYFeUhyLFKZVifVk0Po=",
+        "https://media.istockphoto.com/id/2045383950/photo/digital-render-of-a-serene-bedroom-oasis-with-natural-light.jpg?s=1024x1024&w=is&k=20&c=2olxIZIKzaPCQeRvJNLxfUB7UYFeUhyLFKZVifVk0Po="
+      ]
+    },
+    {
+      "id": "1701234567891",
+      "name_zh": "家庭套房",
+      "name_en": "Family Suite",
+      "name_ms": "Suite Keluarga",
+      "location": ["near-balai-polis", "near-hospital"],
+      "pricePerNight": 20,
+      "pricePerHour": null,
+      "description_zh": "宽敞的家庭套房，配有一张特大号床和两张单人床，非常适合家庭旅行。套房内设有小型休息区和迷你厨房。",
+      "description_en": "Spacious family suite with one king-size bed and two single beds, perfect for family trips. The suite features a small sitting area and mini kitchen.",
+      "description_ms": "Suite keluarga yang luas dengan satu katil king-size dan dua katil single, sesuai untuk perjalanan keluarga. Suite ini mempunyai ruang duduk kecil dan dapur mini.",
+      "facilities_zh": "WiFi, 空调, 55寸智能电视, 迷你厨房, 冰箱, 微波炉, 电热水壶, 独立卫浴, 洗漱用品",
+      "facilities_en": "WiFi, Air conditioning, 55-inch Smart TV, Mini-kitchen, Refrigerator, Microwave, Electric kettle, Private bathroom, Toiletries",
+      "facilities_ms": "WiFi, Penyaman udara, TV Pintar 55 inci, Dapur mini, Peti sejuk, Ketuhar gelombang mikro, Cerek elektrik, Bilik mandi peribadi, Peralatan mandi",
+      "availableDates_zh": "2025年12月15日至2024年2月28日",
+      "availableDates_en": "December 15, 2025 to February 28, 2024",
+      "availableDates_ms": "15 Disember 2025 hingga 28 Februari 2024",
+      "images": ["https://media.istockphoto.com/id/2045383950/photo/digital-render-of-a-serene-bedroom-oasis-with-natural-light.jpg?s=1024x1024&w=is&k=20&c=2olxIZIKzaPCQeRvJNLxfUB7UYFeUhyLFKZVifVk0Po="]
+    }
+  ]
+}

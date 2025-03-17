@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="<%= lang || 'en' %>">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= translations ? translations.siteName : 'Homiestay Booking' %></title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="/">
+        <i class="fas fa-house-user text-primary"></i>
+        <span class="ms-2 fw-bold"><%= translations ? translations.brandName : 'Homiestay' %></span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <div class="mx-auto d-none d-md-block">
+          <!-- <div class="search-bar">
+            <input type="text" class="form-control rounded-pill" placeholder="<%= translations ? translations.search : 'Search homestays...' %>">
+            <button class="btn btn-primary rounded-circle search-btn">
+              <i class="fas fa-search"></i>
+            </button>
+          </div> -->
+        </div>
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fas fa-globe me-1"></i> <%= translations ? translations.language : 'Language' %>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+              <li><a class="dropdown-item language-option <%= lang === 'ms' ? 'active' : '' %>" href="/switch-language/ms">🇲🇾 Bahasa Melayu</a></li>
+              <li><a class="dropdown-item language-option <%= lang === 'en' ? 'active' : '' %>" href="/switch-language/en">🇬🇧 English</a></li>
+              <li><a class="dropdown-item language-option <%= lang === 'zh' ? 'active' : '' %>" href="/switch-language/zh">🇨🇳 中文 (Chinese)</a></li>
+            </ul>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/"><%= translations ? translations.home : 'Home' %></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#"><%= translations ? translations.contact : 'Contact' %></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/login"><%= translations ? translations.hostLogin : 'Host Login' %></a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="content-wrapper">
+    <div class="container main-container">

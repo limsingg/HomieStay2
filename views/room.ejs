@@ -1,0 +1,614 @@
+<%- include('partials/header') %>
+
+<!-- Discount styling -->
+<style>
+  .text-decoration-line-through {
+    text-decoration: line-through;
+  }
+  #savings-row {
+    display: flex !important;
+  }
+  .pulse-animation {
+    animation: pulse 1.5s infinite;
+  }
+  @keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+  }
+  #specialOfferText {
+    background-color: #dc3545;
+    color: white;
+    padding: 0.1rem 0.4rem;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    display: inline-block;
+    margin-left: 0.5rem;
+  }
+</style>
+
+<!-- Debugging section (uncomment to use)
+<div class="alert alert-info">
+  <pre><%- JSON.stringify(room, null, 2) %></pre>
+</div>
+-->
+
+<div class="container">
+  <!-- Room Header -->
+  <div class="room-detail-header">
+    <h1><%= room.name || translations.roomDetails %></h1>
+    <div class="d-flex flex-wrap align-items-center justify-content-between">
+      <div class="d-flex align-items-center mb-2 mb-md-0">
+        <div class="rating">
+          <i class="fas fa-star"></i>
+          <span>4.8</span>
+          <span class="review-count">(<%- Math.floor(Math.random() * 50) + 10 %> <%= translations.reviews %>)</span>
+        </div>
+        <span class="mx-2">•</span>
+        <span class="text-muted">
+          <i class="fas fa-map-marker-alt me-1"></i> <%= translations ? translations.city : 'Kuala Lumpur, Malaysia' %>
+        </span>
+      </div>
+      <div class="d-flex align-items-center">
+        <a href="#" class="btn btn-sm btn-outline-dark me-2">
+          <i class="fas fa-share-alt me-1"></i> <%= translations.share %>
+        </a>
+        <a href="#" class="btn btn-sm btn-outline-dark">
+          <i class="far fa-heart me-1"></i> <%= translations.save %>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Room Gallery -->
+  <div class="room-gallery">
+    <div class="row g-2">
+      <div class="col-md-6">
+        <% if (room.images && room.images.length > 0) { %>
+          <img src="<%= room.images[0] %>" class="img-fluid main-image rounded-start" alt="<%= room.name %>">
+        <% } else { %>
+          <div class="main-image bg-secondary d-flex align-items-center justify-content-center rounded-start">
+            <p class="text-white m-0"><%= translations.noMainImage %></p>
+          </div>
+        <% } %>
+      </div>
+      <div class="col-md-6">
+        <div class="row g-2 thumbnail-container">
+          <% if (room.images && room.images.length > 1) { %>
+            <% for(let i = 1; i < Math.min(5, room.images.length); i++) { %>
+              <div class="col-6">
+                <img src="<%= room.images[i] %>" class="img-fluid thumbnail-image <%= i === 4 ? 'rounded-end' : '' %>" alt="<%= room.name %> - Image <%= i+1 %>">
+              </div>
+            <% } %>
+            <% for(let i = room.images.length; i < 5; i++) { %>
+              <div class="col-6">
+                <div class="thumbnail-image bg-light d-flex align-items-center justify-content-center <%= i === 4 ? 'rounded-end' : '' %>">
+                  <p class="text-muted m-0"><%= translations.noImage %></p>
+                </div>
+              </div>
+            <% } %>
+          <% } else { %>
+            <% for(let i = 0; i < 4; i++) { %>
+              <div class="col-6">
+                <div class="thumbnail-image bg-light d-flex align-items-center justify-content-center <%= i === 3 ? 'rounded-end' : '' %>">
+                  <p class="text-muted m-0"><%= translations.noImage %></p>
+                </div>
+              </div>
+            <% } %>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Room Information -->
+    <div class="col-lg-8">
+      <div class="room-info-container">
+        <div class="row mb-4">
+          <div class="col-md-8">
+            <h2 class="mb-3"><%= translations.entireHomestay %> <%= translations.brandName %></h2>
+            <p class="mb-2">
+              <i class="fas fa-user-friends me-2"></i> <%= Math.min(6, parseInt(room.pricePerNight) / 50) || 2 %> <%= translations.guests %>
+              <i class="fas fa-bed ms-3 me-2"></i> <%= Math.min(3, parseInt(room.pricePerNight) / 80) || 1 %> <%= translations.beds %>
+              <i class="fas fa-bath ms-3 me-2"></i> <%= Math.min(2, parseInt(room.pricePerNight) / 100) || 1 %> <%= translations.bath %>
+            </p>
+          </div>
+          <div class="col-md-4 text-md-end">
+            <% if (room.pricePerNight > 200) { %>
+              <div class="superhost-badge p-2 d-inline-block rounded-pill">
+                <i class="fas fa-award me-1"></i> <%= translations.superhost %>
+              </div>
+            <% } %>
+          </div>
+        </div>
+
+        <hr>
+
+        <div class="highlights mb-4">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <div class="highlight-item">
+                <i class="fas fa-location-arrow fa-lg me-3"></i>
+                <div>
+                  <h6 class="mb-1"><%= translations.greatLocation %></h6>
+                  <p class="text-muted small mb-0"><%= translations.locationRating %></p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="highlight-item">
+                <i class="fas fa-key fa-lg me-3"></i>
+                <div>
+                  <h6 class="mb-1"><%= translations.selfCheckin %></h6>
+                  <p class="text-muted small mb-0"><%= translations.selfCheckinDesc %></p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="highlight-item">
+                <i class="fas fa-calendar-check fa-lg me-3"></i>
+                <div>
+                  <h6 class="mb-1"><%= translations.freeCancellation %></h6>
+                  <p class="text-muted small mb-0"><%= translations.beforeCheckin %></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <hr>
+
+        <div class="description mb-4">
+          <h5 class="mb-3"><%= translations.aboutSpace %></h5>
+          <p><%= room.description %></p>
+        </div>
+
+        <div class="amenities mb-4">
+          <h5 class="mb-3"><%= translations.amenities %></h5>
+          <div class="row">
+            <% if (room.amenities && Array.isArray(room.amenities)) { %>
+              <% room.amenities.forEach(amenity => { %>
+                <div class="col-md-6 amenity-item">
+                  <i class="fas fa-check me-2"></i> <%= amenity %>
+                </div>
+              <% }); %>
+            <% } else if (room.facilities) { %>
+              <% room.facilities.split(',').forEach(facility => { %>
+                <div class="col-md-6 amenity-item">
+                  <i class="fas fa-check me-2"></i> <%= facility.trim() %>
+                </div>
+              <% }); %>
+            <% } else { %>
+              <div class="col-12">
+                <p><%= translations.noAmenities %></p>
+              </div>
+            <% } %>
+          </div>
+        </div>
+
+        <% if (room.availableDates) { %>
+          <div class="availability mb-4">
+            <h5 class="mb-3"><%= translations.availability %></h5>
+            <div class="alert alert-info">
+              <i class="fas fa-calendar-alt me-2"></i>
+              <% if (typeof room.availableDates === 'string') { %>
+                <%= room.availableDates %>
+              <% } else if (Array.isArray(room.availableDates) && room.availableDates.length > 0) { %>
+                <%= room.availableDates.join(', ') %>
+              <% } else { %>
+                <%= translations.contactForAvailability %>
+              <% } %>
+            </div>
+          </div>
+        <% } %>
+
+        <div class="location">
+          <h5 class="mb-3"><%= translations.location %></h5>
+          <div class="map-placeholder bg-light rounded" style="height: 250px; display: flex; align-items: center; justify-content: center;">
+            <p class="text-muted mb-0"><%= translations.mapLoading %> <small>(<%= translations.contactHost %>)</small></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Booking Form -->
+    <div class="col-lg-4">
+      <div class="booking-form">
+        <div class="booking-price">
+          <%
+            // Calculate a discount rate based on room tier
+            const discountRate = room.pricePerNight > 200 ? 0.15 : 0.10;
+            const discountedPrice = Math.floor(room.pricePerNight * (1 - discountRate));
+          %>
+          <div class="d-flex align-items-center">
+            <div class="me-2">
+              <small class="text-decoration-line-through text-muted">RM <%= typeof room.pricePerNight === 'number' ? room.pricePerNight : 0 %></small>
+              <span class="fw-bold text-danger">RM <%= discountedPrice %></span>
+            </div>
+            <small><%= translations.bookingPrice %></small>
+          </div>
+          <div class="mt-1">
+            <small class="text-success">
+              <i class="fas fa-tag me-1"></i>
+              <span id="discountText"><%= Math.round(discountRate * 100) %>% <%= translations.discount %></span>
+              <span id="specialOfferText" class="d-none pulse-animation"><%= translations.specialOffer %></span>
+            </small>
+          </div>
+        </div>
+
+        <form id="bookingForm"
+              data-room-name="<%= room.name || 'Room' %>"
+              data-room-price="<%= (typeof room.pricePerNight === 'number' && !isNaN(room.pricePerNight)) ? room.pricePerNight : 0 %>"
+              data-discount-rate="<%= discountRate %>">
+          <div class="row g-3 mb-3">
+            <div class="col-6">
+              <label for="checkIn" class="form-label"><%= translations.checkIn %></label>
+              <input type="date" class="form-control" id="checkIn" required>
+            </div>
+            <div class="col-6">
+              <label for="checkOut" class="form-label"><%= translations.checkOut %></label>
+              <input type="date" class="form-control" id="checkOut" required>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label for="guests" class="form-label"><%= translations.guestCount %></label>
+            <select class="form-select" id="guests" required>
+              <% for (let i = 1; i <= 10; i++) { %>
+                <option value="<%= i %>"><%= i %> <%= i > 1 ? translations.guests : translations.guest %></option>
+              <% } %>
+            </select>
+          </div>
+
+          <%
+            // Safe price calculations
+            let pricePerNight = 0;
+            try {
+              pricePerNight = typeof room.pricePerNight === 'number' ? room.pricePerNight : 0;
+            } catch (e) {
+              // Handle any potential error
+              pricePerNight = 0;
+            }
+            // Default to 1 night initially
+            const initialNights = 1;
+            const initialTotalNights = pricePerNight * initialNights;
+            const cleaningFee = 50;
+            const initialTotalPrice = initialTotalNights + cleaningFee;
+          %>
+
+          <div class="price-breakdown mb-4" id="priceBreakdown">
+            <div class="d-flex justify-content-between mb-2">
+              <span>
+                <span id="originalPriceDisplay">
+                  RM <span id="originalPrice"><%= pricePerNight %></span>
+                </span>
+                <span id="discountedPriceDisplay" class="ms-1 fw-bold text-success d-none">
+                  RM <span id="discountedPrice"><%= discountedPrice %></span>
+                </span>
+                x <span id="nightCount"><%= initialNights %></span> <span id="nightText"><%= translations.night %></span>
+              </span>
+              <span>
+                <span id="originalTotalDisplay" class="text-decoration-line-through text-muted d-none">
+                  RM <span id="originalNightsTotal"><%= initialTotalNights %></span>
+                </span>
+                <span id="discountedTotalDisplay">
+                  RM <span id="nightsTotal"><%= initialTotalNights %></span>
+                </span>
+              </span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+              <span><%= translations.cleaningFee %></span>
+              <span>RM <%= cleaningFee %></span>
+            </div>
+            <div class="d-flex justify-content-between mb-2" id="savings-row" style="display: none !important;">
+              <span class="text-success"><i class="fas fa-piggy-bank me-1"></i> <%= translations.savings %></span>
+              <span class="text-success">-RM <span id="savingsAmount">0</span></span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+              <span><%= translations.serviceFee %></span>
+              <span>RM 0</span>
+            </div>
+            <hr>
+            <div class="d-flex justify-content-between fw-bold">
+              <span><%= translations.total %></span>
+              <span>RM <span id="totalPrice"><%= initialTotalPrice %></span></span>
+            </div>
+          </div>
+
+          <div class="language-selector mb-3">
+            <label class="form-label"><%= translations.selectLanguage %></label>
+            <div class="btn-group w-100" role="group">
+              <input type="radio" class="btn-check" name="language" id="lang-ms" value="ms" checked>
+              <label class="btn btn-outline-secondary" for="lang-ms">Bahasa Melayu</label>
+
+              <input type="radio" class="btn-check" name="language" id="lang-en" value="en">
+              <label class="btn btn-outline-secondary" for="lang-en">English</label>
+
+              <input type="radio" class="btn-check" name="language" id="lang-zh" value="zh">
+              <label class="btn btn-outline-secondary" for="lang-zh">中文</label>
+            </div>
+          </div>
+
+          <button type="button" id="whatsappBooking" class="btn btn-whatsapp btn-lg w-100 mb-3">
+            <i class="fab fa-whatsapp me-2"></i> <%= translations.bookViaWhatsApp %>
+          </button>
+
+          <p class="text-center text-muted small"><%= translations.noCharge %></p>
+        </form>
+
+        <hr>
+
+        <div class="text-center">
+          <div class="d-flex align-items-center justify-content-center mb-2">
+            <i class="fas fa-phone me-2"></i> <%= translations.needHelp %>
+          </div>
+          <a href="tel:+<%= whatsappNumber %>" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-phone-alt me-1"></i> <%= translations.callHost %>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Similar Rooms Section -->
+  <section class="similar-rooms mt-5">
+    <h3 class="mb-4"><%= translations.morePlaces %></h3>
+    <div class="row">
+      <% similarRooms.forEach(similarRoom => { %>
+        <div class="col-md-4 mb-4">
+          <div class="card room-card h-100">
+            <% if (similarRoom.pricePerNight > 200) { %>
+              <div class="badge-superhost"><%= translations.superhost %></div>
+            <% } else { %>
+              <div class="badge-guest-choice"><%= translations.guestChoice %></div>
+            <% } %>
+
+            <% if (similarRoom.images && similarRoom.images.length > 0) { %>
+              <img src="<%= similarRoom.images[0] %>" class="card-img-top" alt="<%= similarRoom.name %>" style="height: 200px; object-fit: cover;">
+            <% } else { %>
+              <div class="placeholder-image bg-secondary d-flex align-items-center justify-content-center" style="height: 200px;">
+                <p class="text-white m-0"><%= translations.roomPreview %></p>
+              </div>
+            <% } %>
+
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <h5 class="card-title m-0"><%= similarRoom.name %></h5>
+                <div class="rating">
+                  <i class="fas fa-star"></i>
+                  <span><%= (4.5 + Math.random() * 0.5).toFixed(1) %></span>
+                </div>
+              </div>
+              <p class="card-text text-truncate"><%= similarRoom.description %></p>
+              <p class="room-price mb-0">RM <%= similarRoom.pricePerNight %> <small><%= translations.bookingPrice %></small></p>
+
+              <% if (!similarRoom.isPlaceholder) { %>
+                <a href="/room/<%= similarRoom.id %>" class="btn btn-outline-primary w-100 mt-3"><%= translations.viewDetails %></a>
+              <% } else { %>
+                <button class="btn btn-outline-secondary w-100 mt-3" disabled><%= translations.comingSoon %></button>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  </section>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Get room data from form data attributes
+    const bookingForm = document.getElementById('bookingForm');
+    const roomName = bookingForm.getAttribute('data-room-name');
+    const roomPricePerNight = parseFloat(bookingForm.getAttribute('data-room-price')) || 0;
+    const discountRate = parseFloat(bookingForm.getAttribute('data-discount-rate')) || 0;
+    const cleaningFee = 50; // Cleaning fee amount
+
+    // Elements for discount display
+    const originalPriceDisplay = document.getElementById('originalPriceDisplay');
+    const discountedPriceDisplay = document.getElementById('discountedPriceDisplay');
+    const originalTotalDisplay = document.getElementById('originalTotalDisplay');
+    const discountedTotalDisplay = document.getElementById('discountedTotalDisplay');
+    const originalPrice = document.getElementById('originalPrice');
+    const discountedPrice = document.getElementById('discountedPrice');
+    const originalNightsTotal = document.getElementById('originalNightsTotal');
+    const savingsRow = document.getElementById('savings-row');
+    const savingsAmount = document.getElementById('savingsAmount');
+    const discountText = document.getElementById('discountText');
+    const specialOfferText = document.getElementById('specialOfferText');
+
+    const nightsTextSingular = '<%= translations.night %>';
+    const nightsTextPlural = '<%= translations.nights %>';
+
+    // Set initial language from cookie
+    const savedLanguage = getCookie('siteLanguage') || 'ms';
+    const languageRadio = document.getElementById(`lang-${savedLanguage}`);
+    if (languageRadio) {
+      languageRadio.checked = true;
+    }
+
+    // Helper function to get cookie value
+    function getCookie(name) {
+      const nameEQ = name + '=';
+      const ca = document.cookie.split(';');
+      for(let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+      }
+      return null;
+    }
+
+    // Get today and tomorrow dates
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+
+    // Format dates to YYYY-MM-DD string format
+    const formatDate = (date) => {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
+
+    const todayFormatted = formatDate(today);
+    const tomorrowFormatted = formatDate(tomorrow);
+
+    // Set dates in the form
+    const checkInInput = document.getElementById('checkIn');
+    const checkOutInput = document.getElementById('checkOut');
+
+    // Set minimum dates
+    checkInInput.setAttribute('min', todayFormatted);
+    checkOutInput.setAttribute('min', todayFormatted);
+
+    // Set default values
+    checkInInput.value = todayFormatted;
+    checkOutInput.value = tomorrowFormatted;
+
+    // Update checkout min date when checkin changes
+    checkInInput.addEventListener('change', function() {
+      const newCheckIn = new Date(this.value);
+      const newCheckInFormatted = this.value;
+
+      // Set minimum checkout date to check-in date
+      checkOutInput.setAttribute('min', newCheckInFormatted);
+
+      // If checkout date is before checkin date, update checkout to next day
+      if (checkOutInput.value < newCheckInFormatted) {
+        const newCheckOut = new Date(newCheckIn);
+        newCheckOut.setDate(newCheckIn.getDate() + 1);
+        checkOutInput.value = formatDate(newCheckOut);
+      }
+
+      updatePriceBreakdown();
+    });
+
+    checkOutInput.addEventListener('change', function() {
+      updatePriceBreakdown();
+    });
+
+    function updatePriceBreakdown() {
+      const checkIn = new Date(checkInInput.value);
+      const checkOut = new Date(checkOutInput.value);
+
+      if (checkIn && checkOut && !isNaN(checkIn.getTime()) && !isNaN(checkOut.getTime())) {
+        // Calculate nights between dates
+        const nights = Math.max(1, Math.round((checkOut - checkIn) / (1000 * 60 * 60 * 24)));
+
+        // Update night count and text (singular/plural)
+        document.getElementById('nightCount').textContent = nights;
+        document.getElementById('nightText').textContent = nights > 1 ? nightsTextPlural : nightsTextSingular;
+
+        // Calculate discount rate based on length of stay
+        let effectiveDiscountRate = discountRate; // Base discount
+        if (nights >= 5) {
+          effectiveDiscountRate = 0.25; // 25% for 5+ nights
+          discountText.textContent = '25% <%= translations.discount %>';
+          specialOfferText.classList.remove('d-none');
+        } else if (nights >= 3) {
+          effectiveDiscountRate = 0.20; // 20% for 3-4 nights
+          discountText.textContent = '20% <%= translations.discount %>';
+          specialOfferText.classList.remove('d-none');
+        } else if (nights >= 2) {
+          effectiveDiscountRate = 0.15; // 15% for 2 nights
+          discountText.textContent = '15% <%= translations.discount %>';
+          specialOfferText.classList.add('d-none');
+        } else {
+          effectiveDiscountRate = 0.10; // 10% for 1 night
+          discountText.textContent = '10% <%= translations.discount %>';
+          specialOfferText.classList.add('d-none');
+        }
+
+        // Calculate prices
+        const effectiveNightlyPrice = Math.floor(roomPricePerNight * (1 - effectiveDiscountRate));
+        const originalTotal = roomPricePerNight * nights;
+        const discountedTotal = effectiveNightlyPrice * nights;
+        const savings = originalTotal - discountedTotal;
+
+        // Update price elements
+        originalPrice.textContent = roomPricePerNight;
+        discountedPrice.textContent = effectiveNightlyPrice;
+
+        // For multi-night stays, show both original and discounted prices
+        if (nights > 1) {
+          discountedPriceDisplay.classList.remove('d-none');
+          originalTotalDisplay.classList.remove('d-none');
+          originalNightsTotal.textContent = originalTotal;
+          document.getElementById('nightsTotal').textContent = discountedTotal;
+
+          // Show savings row
+          savingsRow.style.display = 'flex !important';
+          savingsAmount.textContent = savings;
+        } else {
+          // For single night stays, simpler display
+          discountedPriceDisplay.classList.remove('d-none');
+          originalTotalDisplay.classList.add('d-none');
+          document.getElementById('nightsTotal').textContent = discountedTotal;
+
+          // Hide savings row for 1 night
+          savingsRow.style.display = 'none !important';
+        }
+
+        // Calculate total with cleaning fee
+        const totalPrice = discountedTotal + cleaningFee;
+        document.getElementById('totalPrice').textContent = totalPrice;
+      }
+    }
+
+    // Calculate price based on default dates when page loads
+    updatePriceBreakdown();
+
+    // WhatsApp booking button
+    document.getElementById('whatsappBooking').addEventListener('click', function() {
+      const checkIn = checkInInput.value;
+      const checkOut = checkOutInput.value;
+      const guests = document.getElementById('guests').value;
+
+      if (!checkIn || !checkOut) {
+        alert('<%= translations.selectDatesAlert %>');
+        return;
+      }
+
+      // Get selected language
+      const selectedLanguage = document.querySelector('input[name="language"]:checked').value || 'ms';
+
+      // Message templates for different languages
+      const messageTemplates = {
+        ms: `Salam, saya ingin membuat tempahan:\n\n` +
+            `- Bilik: ${roomName}\n` +
+            `- Tarikh Masuk: ${checkIn}\n` +
+            `- Tarikh Keluar: ${checkOut}\n` +
+            `- Bilangan Tetamu: ${guests}\n\n` +
+            `Adakah bilik ini masih tersedia untuk tarikh-tarikh tersebut?`,
+
+        en: `Hello, I would like to make a booking:\n\n` +
+            `- Room: ${roomName}\n` +
+            `- Check-in: ${checkIn}\n` +
+            `- Check-out: ${checkOut}\n` +
+            `- Guests: ${guests}\n\n` +
+            `Is this room available for these dates?`,
+
+        zh: `您好，我想预订房间：\n\n` +
+            `- 房间名称：${roomName}\n` +
+            `- 入住日期：${checkIn}\n` +
+            `- 退房日期：${checkOut}\n` +
+            `- 客人数量：${guests}\n\n` +
+            `请问这个房间在这些日期是否有空？`
+      };
+
+      // Get message based on selected language
+      const messageText = messageTemplates[selectedLanguage] || messageTemplates.ms;
+      const message = encodeURIComponent(messageText);
+
+      // Get WhatsApp number from server-side variable
+      const phoneNumber = '<%= whatsappNumber %>';
+
+      window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
+    });
+  });
+</script>
+
+<%- include('partials/footer') %>

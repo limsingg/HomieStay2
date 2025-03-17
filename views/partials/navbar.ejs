@@ -1,0 +1,64 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+    <div class="container">
+        <a class="navbar-brand" href="/">
+            <i class="fas fa-home me-2"></i><%= translations.brandName %>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/"><%= translations.home %></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#"><%= translations.about %></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#"><%= translations.contact %></a>
+                </li>
+            </ul>
+            <ul class="navbar-nav">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-globe me-1"></i> <%= translations.language %>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><h6 class="dropdown-header">Select Language</h6></li>
+                        <li><a class="dropdown-item <%= lang === 'ms' ? 'active' : '' %>" href="/switch-language/ms">🇲🇾 Bahasa Melayu</a></li>
+                        <li><a class="dropdown-item <%= lang === 'en' ? 'active' : '' %>" href="/switch-language/en">🇬🇧 English</a></li>
+                        <li><a class="dropdown-item <%= lang === 'zh' ? 'active' : '' %>" href="/switch-language/zh">🇨🇳 中文</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><div class="dropdown-item text-muted small"><i class="fas fa-robot me-1"></i> AI translation enabled</div></li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin/login"><%= translations.hostLogin %></a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- AI Translation toggle script -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const aiTranslateToggle = document.getElementById('aiTranslateToggle');
+
+        // Initialize toggle state based on localStorage
+        aiTranslateToggle.checked = localStorage.getItem('autoTranslate') === 'true';
+
+        // Toggle AI translation when switch is clicked
+        aiTranslateToggle.addEventListener('change', function() {
+            const isEnabled = this.checked;
+            localStorage.setItem('autoTranslate', isEnabled);
+
+            if (isEnabled) {
+                window.activateAITranslation('<%= lang %>');
+            } else {
+                // Reload the page to remove Google translation
+                window.location.reload();
+            }
+        });
+    });
+</script>

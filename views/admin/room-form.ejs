@@ -1,0 +1,208 @@
+<%- include('../layout', { body: `
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2><%= isNew ? (translations ? translations.addRoom : 'Add Room') : (translations ? translations.editRoom : 'Edit Room') %></h2>
+            <a href="/admin/dashboard" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> <%= translations ? translations.back || 'Back' : 'Back' %>
+            </a>
+        </div>
+        <hr>
+    </div>
+</div>
+
+<form action="/admin/room/save" method="POST" enctype="multipart/form-data">
+    <% if (!isNew) { %>
+        <input type="hidden" name="id" value="<%= room.id %>">
+    <% } %>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0"><%= translations ? translations.roomInformation || 'Room Information' : 'Room Information' %></h5>
+        </div>
+        <div class="card-body">
+            <!-- Language tabs for name and description -->
+            <ul class="nav nav-tabs mb-3" id="languageTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="malay-tab" data-bs-toggle="tab" data-bs-target="#malay" type="button" role="tab">
+                        🇲🇾 Malay
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="english-tab" data-bs-toggle="tab" data-bs-target="#english" type="button" role="tab">
+                        🇬🇧 English
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="chinese-tab" data-bs-toggle="tab" data-bs-target="#chinese" type="button" role="tab">
+                        🇨🇳 Chinese
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="languageTabsContent">
+                <!-- Malay tab -->
+                <div class="tab-pane fade show active" id="malay" role="tabpanel">
+                    <div class="mb-3">
+                        <label for="name_ms" class="form-label">Room Name (Malay)</label>
+                        <input type="text" class="form-control" id="name_ms" name="name_ms" value="<%= room ? room.name_ms || '' : '' %>">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description_ms" class="form-label">Description (Malay)</label>
+                        <textarea class="form-control" id="description_ms" name="description_ms" rows="4"><%= room ? room.description_ms || '' : '' %></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="facilities_ms" class="form-label">Facilities (Malay) - Separate with commas</label>
+                        <textarea class="form-control" id="facilities_ms" name="facilities_ms" rows="3"><%= room ? room.facilities_ms || '' : '' %></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="availableDates_ms" class="form-label">Available Dates (Malay)</label>
+                        <input type="text" class="form-control" id="availableDates_ms" name="availableDates_ms"
+                               value="<%= room ? room.availableDates_ms || '' : '' %>">
+                    </div>
+                </div>
+
+                <!-- English tab -->
+                <div class="tab-pane fade" id="english" role="tabpanel">
+                    <div class="mb-3">
+                        <label for="name_en" class="form-label">Room Name (English)</label>
+                        <input type="text" class="form-control" id="name_en" name="name_en" value="<%= room ? room.name_en || (room.name || '') : '' %>">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description_en" class="form-label">Description (English)</label>
+                        <textarea class="form-control" id="description_en" name="description_en" rows="4"><%= room ? room.description_en || (room.description || '') : '' %></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="facilities_en" class="form-label">Facilities (English) - Separate with commas</label>
+                        <textarea class="form-control" id="facilities_en" name="facilities_en" rows="3"><%= room ? room.facilities_en || (room.facilities || '') : '' %></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="availableDates_en" class="form-label">Available Dates (English)</label>
+                        <input type="text" class="form-control" id="availableDates_en" name="availableDates_en"
+                               value="<%= room ? room.availableDates_en || (room.availableDates || '') : '' %>">
+                    </div>
+                </div>
+
+                <!-- Chinese tab -->
+                <div class="tab-pane fade" id="chinese" role="tabpanel">
+                    <div class="mb-3">
+                        <label for="name_zh" class="form-label">Room Name (Chinese)</label>
+                        <input type="text" class="form-control" id="name_zh" name="name_zh" value="<%= room ? room.name_zh || '' : '' %>">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description_zh" class="form-label">Description (Chinese)</label>
+                        <textarea class="form-control" id="description_zh" name="description_zh" rows="4"><%= room ? room.description_zh || '' : '' %></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="facilities_zh" class="form-label">Facilities (Chinese) - Separate with commas</label>
+                        <textarea class="form-control" id="facilities_zh" name="facilities_zh" rows="3"><%= room ? room.facilities_zh || '' : '' %></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="availableDates_zh" class="form-label">Available Dates (Chinese)</label>
+                        <input type="text" class="form-control" id="availableDates_zh" name="availableDates_zh"
+                               value="<%= room ? room.availableDates_zh || '' : '' %>">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Common fields for all languages -->
+            <hr class="my-4">
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="pricePerNight" class="form-label">Price Per Night (RM)</label>
+                        <input type="number" class="form-control" id="pricePerNight" name="pricePerNight"
+                               value="<%= room ? room.pricePerNight : '' %>" step="0.01">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="pricePerHour" class="form-label">Price Per Hour (RM, Optional)</label>
+                        <input type="number" class="form-control" id="pricePerHour" name="pricePerHour"
+                               value="<%= room && room.pricePerHour ? room.pricePerHour : '' %>" step="0.01">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Location selection -->
+            <div class="mb-3">
+                <label for="location" class="form-label">Location (Select multiple locations if applicable)</label>
+                <select class="form-select" id="location" name="location" multiple>
+                    <option value="city-center" <%= room && room.location && (Array.isArray(room.location) ? room.location.includes('city-center') : room.location === 'city-center') ? 'selected' : '' %>>Kanowit City Center</option>
+                    <option value="kanowit-bandar" <%= room && room.location && (Array.isArray(room.location) ? room.location.includes('kanowit-bandar') : room.location === 'kanowit-bandar') ? 'selected' : '' %>>Kanowit Bandar</option>
+                    <option value="near-balai-polis" <%= room && room.location && (Array.isArray(room.location) ? room.location.includes('near-balai-polis') : room.location === 'near-balai-polis') ? 'selected' : '' %>>Near Balai Polis</option>
+                    <option value="near-hospital" <%= room && room.location && (Array.isArray(room.location) ? room.location.includes('near-hospital') : room.location === 'near-hospital') ? 'selected' : '' %>>Near Hospital</option>
+                    <option value="near-smk-kanowit" <%= room && room.location && (Array.isArray(room.location) ? room.location.includes('near-smk-kanowit') : room.location === 'near-smk-kanowit') ? 'selected' : '' %>>Near SMK Kanowit</option>
+                    <option value="near-school" <%= room && room.location && (Array.isArray(room.location) ? room.location.includes('near-school') : room.location === 'near-school') ? 'selected' : '' %>>Near School</option>
+                    <option value="near-bus" <%= room && room.location && (Array.isArray(room.location) ? room.location.includes('near-bus') : room.location === 'near-bus') ? 'selected' : '' %>>Near Bus Station</option>
+                </select>
+                <div class="form-text">Hold Ctrl (or Command on Mac) to select multiple locations</div>
+            </div>
+
+            <!-- Add Room Type selection -->
+            <div class="mb-3">
+                <label for="roomType" class="form-label">Room Type</label>
+                <select class="form-select" id="roomType" name="roomType">
+                    <option value="whole-house" <%= room && room.roomType === 'whole-house' ? 'selected' : '' %>>Whole House</option>
+                    <option value="room" <%= room && (room.roomType === 'room' || room.roomType === 'single' || room.roomType === 'double' || room.roomType === 'family') ? 'selected' : '' %>>Room</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="images" class="form-label">Room Images (Max 5)</label>
+                <input type="file" class="form-control" id="images" name="images" multiple accept="image/*">
+                <div class="form-text">Recommended size: 1200x800 pixels. Formats: JPG, PNG, GIF</div>
+            </div>
+
+            <% if (room && room.images && room.images.length > 0) { %>
+                <div class="mt-3">
+                    <h6>Current Images:</h6>
+                    <div class="row">
+                        <% room.images.forEach(image => { %>
+                            <div class="col-md-3 mb-3">
+                                <img src="<%= image %>" class="img-thumbnail" style="height: 120px; object-fit: cover;">
+                            </div>
+                        <% }); %>
+                    </div>
+                </div>
+            <% } %>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-end mb-5">
+        <a href="/admin/dashboard" class="btn btn-secondary me-2">
+            <%= translations ? translations.cancel : 'Cancel' %>
+        </a>
+        <button type="submit" class="btn btn-primary">
+            <%= translations ? translations.saveChanges : 'Save Changes' %>
+        </button>
+    </div>
+</form>
+` }) %>
+
+<%- include('../partials/footer') %>
+
+<%
+// Helper function to get localized value
+function getLocalizedValue(room, field, lang) {
+  if (!room || !room[field]) return '';
+
+  // If field is an object with language keys
+  if (typeof room[field] === 'object' && !Array.isArray(room[field])) {
+    return room[field][lang] || '';
+  }
+
+  // If it's just a string, return as is for primary language (ms) or empty for others
+  return lang === 'ms' ? room[field] : '';
+}
+%>
