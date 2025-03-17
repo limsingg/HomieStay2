@@ -3,7 +3,7 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main  # Set this to your main branch
+      - gh-pages  # Set this to your main branch
   workflow_dispatch:
 
 permissions:
@@ -15,6 +15,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
+      - name: Debug - Show workspace contents
+        run: |
+          echo "Current workspace contents:"
+          ls -la
+          echo "Contents of root directory:"
+          find . -maxdepth 1 -type f | sort
 
       - name: Setup Node.js
         uses: actions/setup-node@v2
@@ -32,63 +39,122 @@ jobs:
           # Create .nojekyll file to disable Jekyll processing
           touch build/.nojekyll
 
-          # If you have a build script in package.json, use it instead
-          if grep -q "\"build\"" package.json; then
-            echo "Running npm build script..."
-            npm run build
+          # Critical step: copy index.html and app.js to root of build
+          echo "Copying static assets to build directory..."
+
+          # Copy all relevant files with good error handling and verbose output
+          echo "Copying index.html:"
+          if [ -f index.html ]; then
+            cp index.html build/
+            echo "✅ Successfully copied index.html"
           else
-            # Copy static assets
-            echo "Copying static assets..."
-            cp -r public/* build/ || true
-            cp index.html build/ || true
-            cp styles.css build/ || true
+            echo "❌ index.html not found in root directory!"
+
+            # Creating a fallback index.html to ensure we have something
+            echo "Creating fallback index.html..."
+            echo '<!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>HomieStay</title>
+                <style>
+                    body { font-family: Arial, sans-serif; margin: 0; padding: 0; line-height: 1.6; }
+                    .container { max-width: 1100px; margin: 0 auto; padding: 20px; }
+                    header { background: #4a89dc; color: white; text-align: center; padding: 1rem; }
+                    .fallback-message { background: #f8f9fa; border: 1px solid #ddd; padding: 20px; margin-top: 20px; border-radius: 5px; }
+                </style>
+            </head>
+            <body>
+                <header>
+                    <h1>Welcome to HomieStay</h1>
+                </header>
+                <div class="container">
+                    <div class="fallback-message">
+                        <h2>Site Under Development</h2>
+                        <p>Our booking system is currently being set up. Please check back soon!</p>
+                    </div>
+                </div>
+                <script>
+                    console.log("HomieStay fallback page loaded");
+                </script>
+            </body>
+            </html>' > build/index.html
+            echo "✅ Created fallback index.html"
+          fi
+
+          # Copy styles.css
+          echo "Copying styles.css:"
+          if [ -f styles.css ]; then
+            cp styles.css build/
+            echo "✅ Successfully copied styles.css"
+          else
+            echo "⚠️ styles.css not found"
+          fi
+
+          # Ensure js directory exists
+          mkdir -p build/js
+
+          # Copy app.js
+          echo "Copying app.js:"
+          if [ -f js/app.js ]; then
+            cp js/app.js build/js/
+            echo "✅ Successfully copied app.js"
+          else
+            echo "❌ js/app.js not found!"
+
+            # Create a minimal app.js file
+            echo "Creating minimal app.js..."
             mkdir -p build/js
-            cp js/main.js build/js/ || true
-
-            # Ensure index.html exists in build directory
-            if [ ! -f build/index.html ]; then
-              echo "Creating index.html in build directory..."
-              if [ -f index.html ]; then
-                cp index.html build/
-              elif [ -f views/index.ejs ]; then
-                echo "Converting EJS to HTML..."
-                node -e "
-                  const fs = require('fs');
-                  const ejs = require('ejs');
-                  try {
-                    if (fs.existsSync('views/index.ejs')) {
-                      const template = fs.readFileSync('views/index.ejs', 'utf8');
-                      const html = ejs.render(template, {});
-                      fs.writeFileSync('build/index.html', html);
-                      console.log('Created index.html from EJS template');
-                    }
-                  } catch (err) {
-                    console.error('Error creating index.html:', err);
-                    // Create a simple index.html as fallback
-                    fs.writeFileSync('build/index.html', '<html><head><title>HomieStay</title></head><body><h1>Welcome to HomieStay</h1><p>Site is under construction</p></body></html>');
-                    console.log('Created fallback index.html');
-                  }
-                " || true
-              else
-                # Create a basic index.html as last resort
-                echo "<html><head><title>HomieStay</title></head><body><h1>Welcome to HomieStay</h1><p>Site is under construction</p></body></html>" > build/index.html
-                echo "Created basic index.html fallback"
-              fi
-            fi
+            echo 'console.log("HomieStay application loaded");
+            document.addEventListener("DOMContentLoaded", function() {
+                console.log("DOM fully loaded");
+                const appContainer = document.getElementById("app");
+                if (appContainer) {
+                    appContainer.innerHTML = "<p>Welcome to HomieStay! Application is loading...</p>";
+                }
+            });' > build/js/app.js
+            echo "✅ Created minimal app.js"
           fi
 
-          # If using a SPA (Single Page Application) like React, copy index.html to 404.html
-          # to handle client-side routing on GitHub Pages
+          # Copy any images
+          echo "Copying images if they exist:"
+          if [ -d "images" ]; then
+            mkdir -p build/images
+            cp -r images/* build/images/ || true
+            echo "✅ Copied images directory"
+          else
+            echo "⚠️ No images directory found"
+          fi
+
+          # Copy any assets
+          if [ -d "assets" ]; then
+            mkdir -p build/assets
+            cp -r assets/* build/assets/ || true
+            echo "✅ Copied assets directory"
+          fi
+
+          # CRITICAL: Explicitly remove README.md if it exists in the build folder
+          if [ -f build/README.md ]; then
+            rm build/README.md
+            echo "❌ Removed README.md from build folder"
+          fi
+
+          # List all files in build directory for verification
+          echo "Final build directory contents:"
+          find build -type f | sort
+
+          echo "Verifying index.html exists in build directory:"
           if [ -f build/index.html ]; then
-            cp build/index.html build/404.html || true
+            echo "✅ index.html exists in build directory"
+          else
+            echo "❌ CRITICAL ERROR: index.html is missing from build directory!"
           fi
-
-          # List files in build directory for debugging
-          echo "Contents of build directory:"
-          ls -la build/
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: gh-pages
           folder: build
+          clean: true  # Removes any files in the branch not found in the build directory
+          commit-message: "Deploy to GitHub Pages [skip ci]"
